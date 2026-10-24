@@ -20,10 +20,33 @@ chat_history = [{"role": "system", "content": "Ты - полезный помо�
 print("Диалог начат. Введите 'exit' для завершения.")
 while True:
     prompt = input("\nВы: ")
+    # Проверка на команду выхода
     if prompt.strip().lower() == 'exit':
         print('Чавакакава.')
         break
+    # Новая проверка на команду сохранения
+    if prompt.strip().lower() == '/save':
+        try:
+            with open('dialogue_log.txt', 'w', encoding='utf-8') as f:
+                for message in chat_history:
+                    # Пропускаем системный промпт при сохранении лога диалога
+                    if message["role"] == "system":
+                        continue
 
+                    # Форматируем заголовок роли
+                    role_label = "Вы" if message["role"] == "user" else "Гена"
+                    f.write(f"{role_label}: {message['content']}\n")
+
+                    # Добавляем пустую строку для визуального разделения сообщений
+                    f.write("\n")
+
+            print("✅ Переписка успешно сохранена в файл 'dialogue_log.txt'")
+        except Exception as e:
+            print(f"❌ Ошибка при сохранении файла: {e}")
+        # Пропускаем остальную часть цикла, чтобы не отправлять "/save" нейросети
+        continue
+
+    # Если это обычный текст, добавляем его в историю
     chat_history.append({"role": "user", "content": prompt})
 
     # Применяем шаблон ко всей истории
